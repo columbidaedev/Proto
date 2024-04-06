@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package columbidae.message;
+
+option cshrap_namespace = "Columbidae.Message"
