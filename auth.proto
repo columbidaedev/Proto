@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package columbidae.auth;
+
+option csharp_namespace = "Columbidae.Auth";
+
+service Authentication {
+  rpc RequestLogin(AuthParams) returns (stream AuthResult);
+  rpc Verify(VerifyParams) returns (VerifyResult);
+}
+
+message AuthParams {
+  string device_token = 1;
+  optional string fcm_reg_token = 2;
+}
+
+message AuthResult {
+  bool finished = 1;
+  optional string qq_auth_url = 2;
+  optional string verify_token = 3;
+}
+
+message VerifyParams {
+  string token = 1;
+}
+
+message VerifyResult {
+  bool online = 1;
+  bool failed = 2;
+}

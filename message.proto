@@ -1,6 +1,107 @@
 syntax = "proto3";
+import "google/protobuf/timestamp.proto";
 
 package columbidae.message;
 
 option csharp_namespace = "Columbidae.Message";
 
+service InstantMessage {
+  rpc SendMessage(Message) returns (SendMessageReply);
+}
+
+message Message {
+  uint64 id = 1;
+  repeated Frame frames = 2;
+}
+
+message Frame {
+  enum FrameType {
+    UNSPECIFIED = 0;
+    EMOJI = 1;
+    FILE = 2;
+    REPLY = 3;
+    PICTURE = 4;
+    MENTION = 5;
+    FORWARD = 6;
+    TEXT = 7;
+    VIDEO = 8;
+    XML = 9;
+    JSON = 10;
+  }
+  
+  FrameType type = 1;
+  uint64 id = 2;
+  oneof value {
+    EmojiFrame emoji = 3;
+    FileFrame file = 4;
+    ReplyFrame reply = 5;
+    ImageFrame image = 6;
+    JsonFrame json = 7;
+    MentionFrame mention = 8;
+    ForwardFrame forward = 9;
+    TextFrame text = 10;
+    VideoFrame video = 11;
+    XmlFrame xml = 12;
+  }
+}
+
+message EmojiFrame {
+  sint32 emoji = 1;
+  bool is_large = 2;
+}
+
+message FileFrame {
+  int64 size = 1;
+  string name = 2;
+  bytes md5 = 3;
+  optional string url = 4;
+  string uuid = 5;
+  string hash = 6;
+}
+
+message ReplyFrame {
+  google.protobuf.Timestamp time = 1;
+  uint64 reply_seq = 2;
+  optional string sender_uid = 3;
+  uint32 reply_uin = 4;
+}
+
+message ImageFrame {
+  uint32 width = 1;
+  uint32 height = 2;
+  uint32 size = 4;
+  string url = 5;
+}
+
+message JsonFrame {
+  string json = 1;
+  string res_id = 2;
+}
+
+message MentionFrame {
+  uint32 uin = 1;
+  string uid = 2;
+  string nick = 3;
+}
+
+message ForwardFrame {
+  optional uint32 group_uin = 1;
+  repeated Message messages = 2;
+}
+
+message TextFrame {
+  string text = 1;
+}
+
+message VideoFrame {
+  uint32 height = 1;
+  uint32 width = 2;
+}
+
+message XmlFrame {
+  string xml = 1;
+}
+
+message SendMessageReply {
+  bool ok = 1;
+}
