@@ -7,6 +7,7 @@ option csharp_namespace = "Columbidae.Message";
 
 service InstantMessage {
   rpc SendMessage(Message) returns (SendMessageReply);
+  rpc CreateStream(Token) returns (stream Message);
 }
 
 message Message {
@@ -104,4 +105,8 @@ message XmlFrame {
 
 message SendMessageReply {
   bool ok = 1;
+}
+
+message Token {
+  string token = 1;
 }
