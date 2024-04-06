@@ -2,4 +2,5 @@ syntax = "proto3";
 
 package columbidae.message;
 
-option cshrap_namespace = "Columbidae.Message"
+option csharp_namespace = "Columbidae.Message";
+
