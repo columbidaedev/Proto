@@ -6,25 +6,38 @@ option csharp_namespace = "Columbidae.Auth";
 
 service Authentication {
   rpc RequestLogin(AuthParams) returns (stream AuthResult);
-  rpc Verify(VerifyParams) returns (VerifyResult);
+  rpc GetToken(GetTokenParams) returns (GetTokenResult);
 }
 
 message AuthParams {
-  string device_token = 1;
+  string auth_token = 1;
   optional string fcm_reg_token = 2;
 }
 
 message AuthResult {
   bool finished = 1;
-  optional string qq_auth_url = 2;
-  optional string verify_token = 3;
+  bool online = 2;
+  optional string qq_auth_url = 3;
 }
 
 message VerifyParams {
   string token = 1;
 }
 
-message VerifyResult {
-  bool online = 1;
-  bool failed = 2;
+enum Platform {
+  UNSPECIFIED = 0;
+  ANDROID = 1;
+  MACOS = 2;
+  LINUX = 3;
+  UWP = 4;
+}
+
+message GetTokenParams {
+  string hostname = 1;
+  Platform platform = 2;
+  optional string kernel_version = 3;
+}
+
+message GetTokenResult {
+  string token = 1;
 }
