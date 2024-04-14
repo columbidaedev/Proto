@@ -8,6 +8,8 @@ option csharp_namespace = "Columbidae.Message";
 service InstantMessage {
   rpc SendMessage(Message) returns (SendMessageReply);
   rpc CreateStream(Token) returns (stream Message);
+  rpc CreateResourceStream(ResourceStreamParam) returns (stream Chunk);
+  rpc CreateHistoryStream(HistoryStreamParam) returns (stream HistoryBlock);
 }
 
 message Message {
@@ -97,6 +99,8 @@ message TextFrame {
 message VideoFrame {
   uint32 height = 1;
   uint32 width = 2;
+  uint32 size = 3;
+  string url = 4;
 }
 
 message XmlFrame {
@@ -109,4 +113,29 @@ message SendMessageReply {
 
 message Token {
   string token = 1;
+}
+
+message Chunk {
+  bytes value = 1;
+}
+
+enum ResourceType {
+  UNSPECIFIED = 0;
+  VIDEO = 1;
+  PICTURE = 2;
+}
+
+message ResourceStreamParam {
+  uint64 frame_id = 1;
+  ResourceType type = 2;
+}
+
+message HistoryStreamParam {
+  bytes head = 1;
+}
+
+message HistoryBlock {
+  bytes head = 1;
+  bytes tail = 2;
+  repeated Message messages = 3;
 }
