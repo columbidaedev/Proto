@@ -6,7 +6,7 @@ option csharp_namespace = "Columbidae.Auth";
 
 service Authentication {
   rpc RequestLogin(AuthParams) returns (stream AuthResult);
-  rpc GetToken(GetTokenParams) returns (GetTokenResult);
+  rpc GetToken(DeviceInfo) returns (GetTokenResult);
 }
 
 message AuthParams {
@@ -16,8 +16,9 @@ message AuthParams {
 
 message AuthResult {
   bool finished = 1;
-  bool online = 2;
-  optional string qq_auth_url = 3;
+  bool forbidden = 2;
+  bool online = 3;
+  optional string qq_auth_url = 4;
 }
 
 message VerifyParams {
@@ -32,12 +33,12 @@ enum Platform {
   UWP = 4;
 }
 
-message GetTokenParams {
+message DeviceInfo {
   string hostname = 1;
   Platform platform = 2;
   optional string kernel_version = 3;
 }
 
 message GetTokenResult {
-  string token = 1;
+  string auth_token = 1;
 }
