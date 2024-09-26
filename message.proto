@@ -10,6 +10,9 @@ service InstantMessage {
   rpc CreateStream(Token) returns (stream Message);
   rpc CreateResourceStream(ResourceStreamParam) returns (stream Chunk);
   rpc CreateHistoryStream(HistoryStreamParam) returns (stream HistoryBlock);
+  rpc CreateUpload(CreateUploadParam) returns (Token);
+  rpc Upload(stream ChunkCreator) returns (stream UploadResponse);
+  rpc CancelUpload(Token) returns (UploadResponse);
 }
 
 message Message {
@@ -17,9 +20,9 @@ message Message {
   repeated Frame frames = 2;
   google.protobuf.Timestamp time = 3;
   MessageType type = 4;
-  uint64 sender = 5;
-  uint64 destination = 6;
-  optional uint64 group = 7;
+  uint32 sender = 5;
+  uint32 destination = 6;
+  optional uint32 group = 7;
   enum MessageType {
     UNSPECIFIED = 0;
     FRIEND = 1;
@@ -42,7 +45,7 @@ message Frame {
     XML = 9;
     JSON = 10;
   }
-  
+
   FrameType type = 1;
   optional uint64 id = 2;
   oneof value {
@@ -56,6 +59,31 @@ message Frame {
     TextFrame text = 10;
     VideoFrame video = 11;
     XmlFrame xml = 12;
+  }
+}
+
+message MessageCreator {
+  repeated FrameCreator frames = 1;
+  google.protobuf.Timestamp time = 2;
+  Message.MessageType type = 3;
+  uint32 sender = 4;
+  uint32 destination = 5;
+  optional uint32 group = 6;
+}
+
+message FrameCreator {
+  Frame.FrameType type = 1;
+  oneof value {
+    EmojiFrame emoji = 2;
+    FileFrameCreator file = 3;
+    ReplyFrame reply = 4;
+    ImageFrameCreator image = 5;
+    JsonFrame json = 6;
+    MentionFrame mention = 7;
+    ForwardFrame forward = 8;
+    TextFrame text = 9;
+    VideoFrameCreator video = 10;
+    XmlFrame xml = 11;
   }
 }
 
@@ -73,6 +101,11 @@ message FileFrame {
   string hash = 6;
 }
 
+message FileFrameCreator {
+  string name = 1;
+  string token = 2;
+}
+
 message ReplyFrame {
   google.protobuf.Timestamp time = 1;
   uint64 reply_seq = 2;
@@ -85,6 +118,12 @@ message ImageFrame {
   uint32 height = 2;
   uint32 size = 4;
   string url = 5;
+  string caption = 6;
+}
+
+message ImageFrameCreator {
+  string caption = 1;
+  string token = 2;
 }
 
 message JsonFrame {
@@ -112,6 +151,10 @@ message VideoFrame {
   uint32 width = 2;
   uint32 size = 3;
   string url = 4;
+}
+
+message VideoFrameCreator {
+  string token = 1;
 }
 
 message XmlFrame {
@@ -149,4 +192,20 @@ message HistoryBlock {
   bytes head = 1;
   bytes tail = 2;
   repeated Message messages = 3;
+}
+
+message CreateUploadParam {
+  string caption = 1;
+  optional uint64 size = 2;
+}
+
+message ChunkCreator {
+  string token = 1;
+  bytes chunk = 2;
+}
+
+message UploadResponse {
+  uint64 total_bytes_received = 1;
+  uint32 current_bytes_received = 2;
+  bool terminated = 3;
 }
